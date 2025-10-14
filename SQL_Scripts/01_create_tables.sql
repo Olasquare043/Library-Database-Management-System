@@ -20,12 +20,12 @@ END
 $$;
 
 -- Drop existing tables 
-DROP TABLE IF EXISTS "BorrowHistory", "Books", "Authors","BookOrders", "LibraryStaff", "Departments", "Members" CASCADE;
+DROP TABLE IF EXISTS "borrow_history", "books", "authors","book_orders", "librarystaff", "departments", "members" CASCADE;
 
 -- Creating the tables in dependency-safe order
 
 -- Members
-CREATE TABLE "Members" (
+CREATE TABLE members (
     "MemberID" SERIAL PRIMARY KEY,
     "Name" VARCHAR(100) NOT NULL,
     "Gender" gender_enum NOT NULL,
@@ -37,24 +37,24 @@ CREATE TABLE "Members" (
     "DateOfMembership" DATE NOT NULL,
     "Status" status_enum NOT NULL
 );
-ALTER TABLE IF EXISTS public."Members"
+ALTER TABLE IF EXISTS public.members
     OWNER TO postgres;
 
 -- Authors
-CREATE TABLE "Authors" (
+CREATE TABLE authors (
     "AuthorID" SERIAL PRIMARY KEY,
     "AuthorName" VARCHAR(25),
     "CountryOfOrigin" VARCHAR(25),
     "NumberOfBooksWritten" INT
 );
-ALTER TABLE IF EXISTS public."Authors"
+ALTER TABLE IF EXISTS public.authors
     OWNER TO postgres;
 
 -- Books
-CREATE TABLE "Books" (
+CREATE TABLE books (
     "BookID" SERIAL PRIMARY KEY,
     "Title" VARCHAR(100) NOT NULL,
-    "AuthorID" INT REFERENCES "Authors"("AuthorID"),
+    "AuthorID" INT REFERENCES authors ("AuthorID"),
     "Genre" VARCHAR(50) NOT NULL,
     "DateOfPublication" DATE NOT NULL,
     "Publisher" VARCHAR(50) NOT NULL,
@@ -63,53 +63,53 @@ CREATE TABLE "Books" (
     "AvailableCopies" INT,
     "AgeRating" VARCHAR(10)
 );
-ALTER TABLE IF EXISTS public."Books"
+ALTER TABLE IF EXISTS public.books
     OWNER TO postgres;
 
 -- BorrowHistory
-CREATE TABLE "BorrowHistory" (
+CREATE TABLE borrow_history (
     "BorrowHistoryID" SERIAL PRIMARY KEY,
-    "BookID" INT NOT NULL REFERENCES "Books"("BookID"),
-    "MemberID" INT NOT NULL REFERENCES "Members"("MemberID") ON DELETE CASCADE,
+    "BookID" INT NOT NULL REFERENCES books ("BookID"),
+    "MemberID" INT NOT NULL REFERENCES members("MemberID") ON DELETE CASCADE,
     "BorrowDate" DATE NOT NULL,
     "ReturnDate" DATE
 );
-ALTER TABLE IF EXISTS public."BorrowHistory"
+ALTER TABLE IF EXISTS public.borrow_history
     OWNER TO postgres;
 -- BookOrders
-CREATE TABLE "BookOrders" (
+CREATE TABLE book_orders (
     "OrderID" SERIAL PRIMARY KEY,
     "OrderDate" DATE NOT NULL,
-    "BookID" INT REFERENCES "Books"("BookID"),
+    "BookID" INT REFERENCES books("BookID"),
     "Cost" DECIMAL(10, 2),
     "Quantity" INT,
     "SupplyDate" DATE,
     "FulfillmentStatus" fulfillment_status_enum NOT NULL,
     "NameOfSupplier" VARCHAR(50)
 );
-ALTER TABLE IF EXISTS public."BookOrders"
+ALTER TABLE IF EXISTS public.bookOrders
     OWNER TO postgres;
 
--- Departments
-CREATE TABLE "Departments" (
+-- departments
+CREATE TABLE departments (
     "DeptID" SERIAL PRIMARY KEY,
     "NameOfTheDepartment" VARCHAR(50) NOT NULL,
     "NameOfManager" VARCHAR(50) NOT NULL
 );
-ALTER TABLE IF EXISTS public."Departments"
+ALTER TABLE IF EXISTS public.departments
     OWNER TO postgres;
 
 -- LibraryStaff
-CREATE TABLE "LibraryStaff" (
+CREATE TABLE librarystaff (
     "StaffID" SERIAL PRIMARY KEY,
     "Name" VARCHAR(100) NOT NULL,
     "JobTitle" VARCHAR(50) NOT NULL,
-    "DepartmentID" INT REFERENCES "Departments"("DeptID"),
+    "DepartmentID" INT REFERENCES departments("DeptID"),
     "Gender" gender_enum NOT NULL,
     "Address" VARCHAR(200) NOT NULL,
     "PhoneNumber" VARCHAR(20) NOT NULL,
     "HireDate" DATE NOT NULL,
-    "ManagerID" INT REFERENCES "LibraryStaff"("StaffID")
+    "ManagerID" INT REFERENCES librarystaff("StaffID")
 );
-ALTER TABLE IF EXISTS public."LibraryStaff"
+ALTER TABLE IF EXISTS public."librarystaff"
     OWNER TO postgres;
