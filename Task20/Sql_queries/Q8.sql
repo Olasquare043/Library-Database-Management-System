@@ -1,0 +1,1 @@
+-- **Q8.** Identify members who have never borrowed a book.
